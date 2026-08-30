@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Deployment Pipeline - Gaming Node</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background-color: #020205;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        /* Matrix / Cyber Grid Background */
+        .deploy-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: 
+                linear-gradient(rgba(2, 2, 5, 0.9), rgba(5, 2, 15, 0.95)),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Terminal Box */
+        .terminal-box {
+            position: relative; z-index: 10;
+            width: 90%; max-width: 650px;
+            background: rgba(5, 5, 12, 0.95);
+            border: 2px solid #00ffcc;
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.25), inset 0 0 25px rgba(0, 255, 204, 0.08);
+            border-radius: 10px; padding: 35px;
+            animation: terminalSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes terminalSlideUp {
+            0% { transform: translateY(40px) scale(0.95); opacity: 0; filter: blur(8px); }
+            100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); }
+        }
+
+        .terminal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px dashed rgba(0, 255, 204, 0.3);
+            padding-bottom: 15px; margin-bottom: 25px;
+        }
+
+        .terminal-title {
+            color: #ff007f; font-size: 16px; font-weight: bold; letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.6);
+        }
+
+        .status-badge {
+            background: rgba(0, 255, 204, 0.1); border: 1px solid #00ffcc;
+            padding: 4px 10px; font-size: 11px; border-radius: 4px; color: #00ffcc;
+            animation: pulseBadge 1.5s infinite alternate;
+        }
+
+        @keyframes pulseBadge {
+            0% { opacity: 0.6; box-shadow: 0 0 5px rgba(0,255,204,0.2); }
+            100% { opacity: 1; box-shadow: 0 0 15px rgba(0,255,204,0.6); }
+        }
+
+        /* Progress Bar Section */
+        .progress-container {
+            margin-bottom: 25px;
+        }
+
+        .progress-info {
+            display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; color: #94a3b8;
+        }
+
+        .progress-bar-bg {
+            width: 100%; height: 10px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 5px; overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%; width: 0%; background: linear-gradient(90deg, #00ffcc, #ff007f);
+            box-shadow: 0 0 15px #00ffcc; transition: width 0.4s ease;
+        }
+
+        /* Live Terminal Logs */
+        .log-console {
+            background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px; padding: 15px; height: 130px; overflow-y: hidden;
+            font-size: 12px; color: #a78bfa; line-height: 1.6;
+            display: flex; flex-direction: column; justify-content: flex-end;
+        }
+
+        .log-line { margin-top: 4px; }
+        .log-success { color: #00ffcc; }
+
+        /* SUCCESS POPUP MODAL STYLING */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(2, 2, 8, 0.85); backdrop-filter: blur(10px);
+            z-index: 1000; justify-content: center; align-items: center; padding: 20px;
+        }
+
+        .modal-card {
+            background: rgba(10, 8, 25, 0.95);
+            border: 2px solid #00ffcc;
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.4);
+            border-radius: 12px; padding: 30px; max-width: 520px; width: 100%;
+            text-align: center; animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-card h3 {
+            color: #00ffcc; font-size: 20px; margin-bottom: 15px; letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+        }
+
+        .modal-card p {
+            color: #cbd5e1; font-size: 13px; line-height: 1.6; margin-bottom: 25px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #00ffcc, #0284c7);
+            color: #020205; border: none; padding: 12px 30px; border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 14px;
+            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+        }
+
+        .modal-btn:hover {
+            background: linear-gradient(135deg, #ff007f, #9333ea);
+            color: #ffffff; box-shadow: 0 0 25px #ff007f;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="deploy-bg"></div>
+
+    <!-- Terminal Main Box -->
+    <div class="terminal-box" id="terminalBox">
+        <div class="terminal-header">
+            <span class="terminal-title">⚙️ DEPLOYMENT PIPELINE v4.2</span>
+            <span class="status-badge" id="statusText">IN PROGRESS</span>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-info">
+                <span>Injecting Payload to Target Node...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="log-console" id="logConsole">
+            <div class="log-line">> Initializing secure handshake with target server...</div>
+        </div>
+    </div>
+
+    <!-- SUCCESS POPUP MODAL (Hidden Initially) -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-card">
+            <h3>🎉 DEPLOYMENT SUCCESSFUL!</h3>
+            <p>
+                Your deployment process has been completed successfully. The requested changes will be reflected in your Free Fire profile within <strong>48 hours</strong>.<br><br>
+                You will be notified regarding updates and status details via <strong>WhatsApp</strong> and <strong>Gmail</strong>.
+            </p>
+            <button class="modal-btn" onclick="closePopup()">DONE / CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        const logs = [
+            "> Verifying user authentication token...",
+            "> Bypassing regional firewall layers [OK]",
+            "> Allocating requested resources to gaming profile...",
+            "> Encrypting packet stream for safety...",
+            "> Finalizing database synchronization...",
+            "> SUCCESS! Deployment protocol executed completely."
+        ];
+
+        let progress = 0;
+        let logIndex = 0;
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+        const logConsole = document.getElementById('logConsole');
+        const statusText = document.getElementById('statusText');
+        const successModal = document.getElementById('successModal');
+        const terminalBox = document.getElementById('terminalBox');
+
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 18) + 8;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                statusText.innerText = "DEPLOYED SUCCESSFULLY";
+                statusText.style.background = "rgba(0, 255, 204, 0.2)";
+                statusText.style.borderColor = "#00ffcc";
+                
+                // Show Custom Neon Popup Modal after a brief pause
+                setTimeout(() => {
+                    terminalBox.style.filter = "blur(5px)";
+                    successModal.style.display = "flex";
+                }, 600);
+            }
+
+            progressBar.style.width = progress + '%';
+            progressPercent.innerText = progress + '%';
+
+            if (logIndex < logs.length) {
+                const newLog = document.createElement('div');
+                newLog.className = 'log-line';
+                if(progress > 80) newLog.className += ' log-success';
+                newLog.innerText = logs[logIndex];
+                logConsole.appendChild(newLog);
+                logIndex++;
+            }
+        }, 450);
+
+        function closePopup() {
+            alert("Redirecting back to home gateway...");
+            window.location.href = 'freefire.html';
+        }
+    </script>
+</body>
+</html>
