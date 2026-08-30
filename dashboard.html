@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instaboost Panel - Dashboard</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #030308;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Cyberpunk Dark Grid Background with Glowing Orbs */
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .glow-orb-1 {
+            position: fixed;
+            top: 10%;
+            left: 20%;
+            width: 350px;
+            height: 350px;
+            background: rgba(0, 255, 204, 0.1);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            animation: orbMove 8s ease-in-out infinite alternate;
+        }
+
+        .glow-orb-2 {
+            position: fixed;
+            bottom: 10%;
+            right: 20%;
+            width: 350px;
+            height: 350px;
+            background: rgba(56, 189, 248, 0.1);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            animation: orbMove 8s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes orbMove {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        /* Top Header Bar */
+        .dash-header {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 15, 30, 0.85);
+            border-bottom: 1px solid rgba(0, 255, 204, 0.3);
+            padding: 20px 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .dash-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00ffcc;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+            margin: 0;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: #ff3366;
+            border: 1px solid #ff3366;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.2);
+        }
+
+        .logout-btn:hover {
+            background: #ff3366;
+            color: #030308;
+            box-shadow: 0 0 20px #ff3366;
+        }
+
+        /* Main Content Container */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .main-container h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+
+        .main-container p.subtitle {
+            color: #8a99ad;
+            font-size: 15px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .section-divider {
+            margin: 50px 0 30px 0;
+            border: none;
+            border-top: 1px dashed rgba(0, 255, 204, 0.3);
+        }
+
+        /* Cyberpunk Hacker COD Banner */
+        .cyber-cod-banner {
+            position: relative;
+            width: 100%;
+            border-radius: 14px;
+            padding: 3px;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+            margin-bottom: 40px;
+        }
+
+        .cyber-cod-banner::before {
+            content: '';
+            position: absolute;
+            top: -150%;
+            left: -150%;
+            width: 400%;
+            height: 400%;
+            background: conic-gradient(from 0deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            animation: slowSpin 1.25s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes slowSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cyber-cod-inner {
+            position: relative;
+            z-index: 1;
+            background: rgba(8, 12, 22, 0.98);
+            border-radius: 12px;
+            padding: 20px 25px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+        }
+
+        .cyber-cod-inner p {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: 1px;
+        }
+
+        .cyber-cod-inner .terminal-tag {
+            color: #ff007f;
+            font-weight: bold;
+        }
+
+        .cyber-cod-inner .highlight-cyan {
+            color: #00ffcc;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+        }
+
+        /* Packages Grid Layout */
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 35px;
+        }
+
+        /* Individual Package Card */
+        .package-card {
+            background: rgba(10, 15, 30, 0.9);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 16px;
+            padding: 35px 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .package-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #00ffcc;
+            box-shadow: 0 0 35px rgba(0, 255, 204, 0.5), inset 0 0 20px rgba(0, 255, 204, 0.2);
+        }
+
+        .package-card.popular {
+            border-color: #ff007f;
+        }
+
+        .package-card.popular:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #ff007f;
+            box-shadow: 0 0 35px rgba(255, 0, 127, 0.6), inset 0 0 20px rgba(255, 0, 127, 0.3);
+        }
+
+        .package-card.popular::before {
+            content: 'BEST VALUE';
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background: #ff007f;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 5px 35px;
+            transform: rotate(45deg);
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.8);
+            letter-spacing: 1px;
+        }
+
+        /* Icon Graphic */
+        .ig-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px auto;
+            background: linear-gradient(135deg, #00ffcc, #0077ff);
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #030308;
+            font-size: 26px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+        }
+
+        .package-card.popular .ig-icon {
+            background: linear-gradient(135deg, #ff007f, #7928ca);
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+            color: white;
+        }
+
+        /* Likes Card Special Styling (Pink Theme match) */
+        .package-card.likes-card {
+            border-color: rgba(255, 0, 127, 0.3);
+        }
+        .package-card.likes-card:hover {
+            border-color: #ff007f;
+            box-shadow: 0 0 35px rgba(255, 0, 127, 0.5), inset 0 0 20px rgba(255, 0, 127, 0.2);
+        }
+        .package-card.likes-card .ig-icon {
+            background: linear-gradient(135deg, #ff007f, #ff7300);
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+            color: white;
+        }
+        .package-card.likes-card .price {
+            color: #ff007f;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+        }
+        .package-card.likes-card .features-list li::before {
+            color: #ff007f;
+        }
+        .package-card.likes-card .pay-btn {
+            color: #ff007f;
+            border-color: #ff007f;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+        .package-card.likes-card .pay-btn:hover {
+            background: #ff007f;
+            color: #ffffff;
+            box-shadow: 0 0 20px #ff007f;
+        }
+
+        .package-card h3 {
+            font-size: 20px;
+            color: #ffffff;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .price {
+            font-size: 30px;
+            font-weight: bold;
+            color: #00ffcc;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        .package-card.popular .price {
+            color: #ff007f;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+            color: #8a99ad;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-list li::before {
+            content: '>';
+            color: #00ffcc;
+            font-weight: bold;
+        }
+
+        .package-card.popular .features-list li::before {
+            color: #ff007f;
+        }
+
+        /* Buttons Container */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        /* Pay Now Button (Linked to payment/checkout page) */
+        .pay-btn {
+            flex: 1;
+            background: transparent;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            padding: 10px 5px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+            text-decoration: none;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .pay-btn:hover {
+            background: #00ffcc;
+            color: #030308;
+            box-shadow: 0 0 20px #00ffcc;
+            transform: translateY(-2px);
+        }
+
+        .package-card.popular .pay-btn {
+            color: #ff007f;
+            border-color: #ff007f;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+
+        .package-card.popular .pay-btn:hover {
+            background: #ff007f;
+            color: #ffffff;
+            box-shadow: 0 0 20px #ff007f;
+        }
+
+        /* Pay After Button (Linked to payafter.html) */
+        .pay-after-btn {
+            flex: 1;
+            background: transparent;
+            color: #38bdf8;
+            border: 2px solid #38bdf8;
+            padding: 10px 5px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+            text-decoration: none;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .pay-after-btn:hover {
+            background: #38bdf8;
+            color: #030308;
+            box-shadow: 0 0 20px #38bdf8;
+            transform: translateY(-2px);
+        }
+
+        /* Security Policy Notice Box */
+        .security-notice {
+            background: rgba(10, 15, 30, 0.95);
+            border: 1px dashed rgba(0, 255, 204, 0.4);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 50px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .security-notice p {
+            margin: 0;
+            color: #a5b4fc;
+            font-size: 14px;
+            letter-spacing: 1px;
+            line-height: 1.6;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .security-notice span {
+            color: #00ffcc;
+            font-weight: bold;
+        }
+
+        /* Developer Credit Badge */
+        .developer-credit {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(10, 15, 30, 0.95);
+            border: 2px solid #00ffcc;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            text-align: right;
+        }
+
+        .developer-credit span {
+            display: block;
+            font-size: 11px;
+            color: #38bdf8;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .developer-credit h4 {
+            margin: 4px 0 0 0;
+            font-size: 16px;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-bg"></div>
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+
+    <div class="dash-header">
+        <h1 class="dash-title">INSTABOOST PANEL</h1>
+        <a href="login.html" class="logout-btn">TERMINATE</a>
+    </div>
+
+    <div class="main-container">
+        <h2>INSTAGRAM FOLLOWERS PROTOCOL</h2>
+        <p class="subtitle">Select your authorization package to deploy followers instantly.</p>
+
+        <div class="cyber-cod-banner">
+            <div class="cyber-cod-inner">
+                <p>
+                    <span class="terminal-tag">[SECURE PROTOCOL]:</span> Cash on delivery is also available! If you don't want to pay it now, <span class="highlight-cyan">so you can pay it later after receive followers as your package.</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="packages-grid">
+            
+            <div class="package-card">
+                <div class="ig-icon">100</div>
+                <h3>100 FOLLOWERS</h3>
+                <div class="price">₹80</div>
+                <ul class="features-list">
+                    <li>Non-Drop Followers Node</li>
+                    <li>Instant System Delivery</li>
+                    <li>No Password Required</li>
+                </ul>
+                <div class="button-group">
+                    <a href="payment.html?package=100%20Followers&price=₹80" class="pay-btn">PAY NOW</a>
+                    <a href="payafter.html?package=100%20Followers&price=₹80" class="pay-after-btn">PAY AFTER</a>
+                </div>
+            </div>
+
+            <div class="package-card popular">
+                <div class="ig-icon">500</div>
+                <h3>500 FOLLOWERS</h3>
+                <div class="price">₹480</div>
+                <ul class="features-list">
+                    <li>High Priority Nodes</li>
+                    <li>Superfast Cyber Delivery</li>
+                    <li>24/7 Mainframe Support</li>
+                </ul>
+                <div class="button-group">
+                    <a href="payment.html?package=500%20Followers&price=₹480" class="pay-btn">PAY NOW</a>
+                    <a href="payafter.html?package=500%20Followers&price=₹480" class="pay-after-btn">PAY AFTER</a>
+                </div>
+            </div>
+
+            <div class="package-card">
+                <div class="ig-icon">1K</div>
+                <h3>1000 FOLLOWERS</h3>
+                <div class="price">₹980</div>
+                <ul class="features-list">
+                    <li>Elite Verified Status</li>
+                    <li>Gradual Safe Deployment</li>
+                    <li>Lifetime Refill Guarantee</li>
+                </ul>
+                <div class="button-group">
+                    <a href="payment.html?package=1000%20Followers&price=₹980" class="pay-btn">PAY NOW</a>
+                    <a href="payafter.html?package=1000%20Followers&price=₹980" class="pay-after-btn">PAY AFTER</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- INSTAGRAM LIKES SECTION (Added with exact followers size, styling and Pay Now / Pay After features) -->
+        <hr class="section-divider">
+
+        <h2 style="margin-top: 40px;">INSTAGRAM LIKES PROTOCOL</h2>
+        <p class="subtitle">Select your authorization package to deploy post likes instantly.</p>
+
+        <div class="packages-grid">
+            
+            <div class="package-card likes-card">
+                <div class="ig-icon">❤️</div>
+                <h3>100 LIKES</h3>
+                <div class="price">₹50</div>
+                <ul class="features-list">
+                    <li>Targeted Post Engagement</li>
+                    <li>Instant Heart Deployment</li>
+                    <li>No Password Required</li>
+                </ul>
+                <div class="button-group">
+                    <a href="payment.html?package=100%20Likes&price=₹50" class="pay-btn">PAY NOW</a>
+                    <a href="payafter.html?package=100%20Likes&price=₹50" class="pay-after-btn">PAY AFTER</a>
+                </div>
+            </div>
+
+            <div class="package-card likes-card popular">
+                <div class="ig-icon">❤️</div>
+                <h3>500 LIKES</h3>
+                <div class="price">₹220</div>
+                <ul class="features-list">
+                    <li>High Velocity Hearts</li>
+                    <li>Viral Post Momentum</li>
+                    <li>24/7 Mainframe Support</li>
+                </ul>
+                <div class="button-group">
+                    <a href="payment.html?package=500%20Likes&price=₹220" class="pay-btn">PAY NOW</a>
+                    <a href="payafter.html?package=500%20Likes&price=₹220" class="pay-after-btn">PAY AFTER</a>
+                </div>
+            </div>
+
+            <div class="package-card likes-card">
+                <div class="ig-icon">❤️</div>
+                <h3>1000 LIKES</h3>
+                <div class="price">₹400</div>
+                <ul class="features-list">
+                    <li>Maximum Post Visibility</li>
+                    <li>Gradual Safe Deployment</li>
+                    <li>Lifetime Refill Guarantee</li>
+                </ul>
+                <div class="button-group">
+                    <a href="payment.html?package=1000%20Likes&price=₹400" class="pay-btn">PAY NOW</a>
+                    <a href="payafter.html?package=1000%20Likes&price=₹400" class="pay-after-btn">PAY AFTER</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="security-notice">
+            <p>⚠️ <span>SECURITY NOTICE:</span> Please allow approximately <span>48 hours</span> for complete delivery. Our security systems will verify your Instagram account parameters before transferring the followers safely.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
