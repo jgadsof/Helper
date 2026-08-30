@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment Gateway</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Payment Card Container */
+        .payment-container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 440px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .payment-header h2 {
+            margin: 0 0 6px 0;
+            font-size: 22px;
+            color: #1a202c;
+        }
+
+        .payment-header p {
+            margin: 0;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        /* All Cards Branding / Icons Row in Black Color */
+        .card-networks {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .network-badge {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #1a202c;
+            background: #000000;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        /* Order Summary Box */
+        .order-summary {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-summary span {
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 14px;
+            font-size: 14px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* Complete Payment Button */
+        .submit-btn {
+            width: 100%;
+            background: #3182ce;
+            color: #ffffff;
+            border: none;
+            padding: 13px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 5px;
+        }
+
+        .submit-btn:hover {
+            background: #2b6cb0;
+        }
+
+        /* Top Notification Pop-up for Validation Error */
+        .validation-alert {
+            display: none;
+            background: #fff5f5;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Natural Bank Error Overlay Modal */
+        .error-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 25px;
+        }
+
+        /* Top Right Corner Timer Badge */
+        .timer-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #edf2f7;
+            color: #2d3748;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid #cbd5e0;
+        }
+
+        .error-icon {
+            width: 50px;
+            height: 50px;
+            background: #fed7d7;
+            color: #e53e3e;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .error-overlay h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #2d3748;
+        }
+
+        .error-overlay p {
+            margin: 0;
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .redirect-note {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="payment-container">
+        
+        <!-- Header -->
+        <div class="payment-header">
+            <h2>Complete Secure Payment</h2>
+            <p>Debit Card / Credit Card / Net Banking</p>
+        </div>
+
+        <!-- All Supported Cards in Black Color -->
+        <div class="card-networks">
+            <span class="network-badge">Credit Card</span>
+            <span class="network-badge">Debit Card</span>
+            <span class="network-badge">Visa Card</span>
+            <span class="network-badge">Mastercard</span>
+            <span class="network-badge">Rupay Card</span>
+            <span class="network-badge">Maestro</span>
+        </div>
+
+        <!-- Live Validation Alert Box -->
+        <div class="validation-alert" id="validationAlert">Only valid alphabets and digits are allowed.</div>
+
+        <!-- Order Summary -->
+        <div class="order-summary" id="summaryBox">
+            <span>Package: Loading...</span>
+            <span id="priceDisplay">--</span>
+        </div>
+
+        <!-- Payment Form -->
+        <form id="paymentForm" onsubmit="handlePayment(event)">
+            <div class="form-group">
+                <label>Cardholder Name (Alphabets Only)</label>
+                <!-- Allows only letters and spaces -->
+                <input type="text" class="form-control" id="cardName" placeholder="John Doe" oninput="validateInput(this, /[^a-zA-Z\s]/g)" required>
+            </div>
+
+            <div class="form-group">
+                <label>Card Number (Digits Only)</label>
+                <!-- Allows only digits -->
+                <input type="text" class="form-control" id="cardNumber" placeholder="4111222233334444" maxlength="16" oninput="validateInput(this, /[^0-9]/g)" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expiry Date (MMYY)</label>
+                    <input type="text" class="form-control" id="expiryDate" placeholder="MMYY" maxlength="4" oninput="validateInput(this, /[^0-9]/g)" required>
+                </div>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="password" class="form-control" id="cvvNumber" placeholder="123" maxlength="4" oninput="validateInput(this, /[^0-9]/g)" required>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Pay Securely</button>
+        </form>
+
+        <!-- Natural Bank Error Notification Popup (Hidden by default) -->
+        <div class="error-overlay" id="errorOverlay">
+            <div class="timer-badge" id="timerCount">6s</div>
+            <div class="error-icon">!</div>
+            <h3>Transaction Failed</h3>
+            <p>Bank server is currently down or not responding. Please try again later or use an alternate payment method.</p>
+            <div class="redirect-note">Returning to your dashboard shortly...</div>
+        </div>
+
+    </div>
+
+    <script>
+        // Extract package parameters from URL and show them
+        const urlParams = new URLSearchParams(window.location.search);
+        const packageName = urlParams.get('package');
+        const packagePrice = urlParams.get('price');
+
+        if (packageName && packagePrice) {
+            document.getElementById('summaryBox').innerHTML = `<span>${decodeURIComponent(packageName)}</span> <span style="color: #3182ce;">${decodeURIComponent(packagePrice)}</span>`;
+        }
+
+        // Live input validator checking invalid characters and showing alert message popup
+        function validateInput(element, regex) {
+            const alertBox = document.getElementById('validationAlert');
+            if (regex.test(element.value)) {
+                alertBox.style.display = 'block';
+                element.value = element.value.replace(regex, '');
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Handle form submission, show error overlay, start 6-second live timer, and redirect to dashboard
+        function handlePayment(event) {
+            event.preventDefault(); // Stop actual form submission
+
+            // Show error overlay popup
+            document.getElementById('errorOverlay').style.display = 'flex';
+
+            let timeLeft = 6;
+            const timerDisplay = document.getElementById('timerCount');
+            timerDisplay.textContent = timeLeft + 's';
+
+            // Run countdown every 1 second
+            let countdown = setInterval(function() {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft + 's';
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    // Redirect straight to dashboard page
+                    window.location.href = 'dashboard.html';
+                }
+            }, 1000);
+        }
+    </script>
+
+</body>
+</html>
