@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaHelper // Secure Authentication & Admin Access</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+        :root {
+            --neon-pink: #ff0055;
+            --neon-cyan: #00f3ff;
+            --neon-green: #00ff66;
+            --bg-dark: #05050a;
+            --panel-bg: rgba(10, 10, 20, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+            background-size: 100% 4px, 6px 100%;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--panel-bg);
+            border: 2px solid var(--neon-cyan);
+            padding: 35px;
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.3);
+            position: relative;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            text-align: center;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--neon-pink);
+            font-size: 0.8rem;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--neon-cyan);
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px;
+            background: #000;
+            border: 1px solid var(--neon-cyan);
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            border-radius: 4px;
+            outline: none;
+            font-size: 0.95rem;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green);
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: var(--neon-cyan);
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 4px;
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+            transition: 0.3s;
+            margin-top: 5px;
+        }
+
+        .auth-btn:hover {
+            background: #fff;
+            box-shadow: 0 0 20px #fff;
+        }
+
+        .toggle-box {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #a0a0c2;
+        }
+
+        .toggle-box span {
+            color: var(--neon-green);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .msg {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            text-align: center;
+            display: none;
+        }
+
+        /* --- OTP MODAL STYLING --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            display: none;
+        }
+
+        .modal-box {
+            background: var(--panel-bg);
+            border: 2px solid var(--neon-green);
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 255, 102, 0.4);
+        }
+
+        .modal-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-green);
+            margin-bottom: 10px;
+        }
+
+        .otp-display-box {
+            background: #000;
+            border: 1px dashed var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-size: 1.5rem;
+            padding: 10px;
+            margin: 15px 0;
+            letter-spacing: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <h2 id="formTitle">SECURE LOGIN</h2>
+        <div class="subtitle" id="formSub">> ENTER CREDENTIALS TO ACCESS SYSTEM</div>
+
+        <form id="authForm" onsubmit="handleAuth(event)">
+            <div class="form-group" id="emailGroup" style="display: none;">
+                <label>Email Address (Unique)</label>
+                <input type="email" id="emailInput" placeholder="user@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>Username / ID / Admin Email</label>
+                <input type="text" id="userInput" required placeholder="Enter username or email">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="passInput" required placeholder="Enter password">
+            </div>
+
+            <button type="submit" class="auth-btn" id="submitBtn">Login Protocol</button>
+            <div id="msgBox" class="msg"></div>
+        </form>
+
+        <div class="toggle-box" id="toggleText">
+            Don't have an account? <span onclick="switchMode()">Register New ID</span>
+        </div>
+    </div>
+
+    <!-- OTP VERIFICATION POPUP MODAL -->
+    <div class="modal-overlay" id="otpModal">
+        <div class="modal-box">
+            <h3>VERIFY SECURITY OTP</h3>
+            <p style="font-size: 0.85rem; color: #a0a0c2;">Your verification code is generated below:</p>
+            
+            <div class="otp-display-box" id="generatedOtpText">----</div>
+
+            <div class="form-group" style="text-align: left;">
+                <label style="color: var(--neon-green);">Enter Verification OTP</label>
+                <input type="text" id="enteredOtpInput" placeholder="Enter 4-digit OTP" maxlength="4">
+            </div>
+
+            <button type="button" class="auth-btn" style="background: var(--neon-green);" onclick="verifyOtp()">Verify & Complete Register</button>
+            <div id="otpMsg" class="msg"></div>
+        </div>
+    </div>
+
+    <script>
+        let isRegisterMode = false;
+        let tempUserData = null;
+        let currentGeneratedOtp = "";
+
+        // मास्टर एडमिन क्रेडेंशियल्स जो आपने सेट किए हैं
+        const ADMIN_EMAIL = "hanuman@gmail.com";
+        const ADMIN_PASS = "Ram@hanuman";
+
+        function switchMode() {
+            isRegisterMode = !isRegisterMode;
+            const title = document.getElementById('formTitle');
+            const sub = document.getElementById('formSub');
+            const emailGroup = document.getElementById('emailGroup');
+            const btn = document.getElementById('submitBtn');
+            const toggle = document.getElementById('toggleText');
+            const msgBox = document.getElementById('msgBox');
+
+            msgBox.style.display = 'none';
+
+            if (isRegisterMode) {
+                title.innerText = "ACCOUNT REGISTRATION";
+                sub.innerText = "> CREATE NEW PROFILE (ONE EMAIL = ONE ID)";
+                emailGroup.style.display = 'block';
+                document.getElementById('emailInput').required = true;
+                btn.innerText = "Proceed to OTP";
+                toggle.innerHTML = 'Already registered? <span onclick="switchMode()">Login Here</span>';
+            } else {
+                title.innerText = "SECURE LOGIN";
+                sub.innerText = "> ENTER CREDENTIALS TO ACCESS SYSTEM";
+                emailGroup.style.display = 'none';
+                document.getElementById('emailInput').required = false;
+                btn.innerText = "Login Protocol";
+                toggle.innerHTML = 'Don\'t have an account? <span onclick="switchMode()">Register New ID</span>';
+            }
+        }
+
+        function handleAuth(event) {
+            event.preventDefault();
+            
+            const user = document.getElementById('userInput').value.trim().toLowerCase();
+            const pass = document.getElementById('passInput').value.trim();
+            const email = document.getElementById('emailInput').value.trim().toLowerCase();
+            const msgBox = document.getElementById('msgBox');
+
+            let users = JSON.parse(localStorage.getItem('instaHelperUsers')) || [];
+            msgBox.style.display = 'block';
+
+            if (isRegisterMode) {
+                // चेक करें कि ईमेल पहले से रजिस्टर्ड है क्या?
+                let existingUser = users.find(u => u.email === email);
+                if (existingUser) {
+                    msgBox.style.color = 'var(--neon-pink)';
+                    msgBox.innerText = "ERROR: This email is already registered! Please Login.";
+                    return;
+                }
+
+                // अस्थायी रूप से डेटा सेव करो और OTP जनरेट करो
+                tempUserData = { email: email, username: user, password: pass };
+                currentGeneratedOtp = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit random OTP
+
+                // OTP पॉपअप पर कोड दिखाओ
+                document.getElementById('generatedOtpText').innerText = currentGeneratedOtp;
+                document.getElementById('enteredOtpInput').value = "";
+                document.getElementById('otpMsg').style.display = 'none';
+
+                // मॉडल पॉपअप दिखाओ
+                document.getElementById('otpModal').style.display = 'flex';
+                msgBox.style.display = 'none';
+
+            } else {
+                // --- 1. सबसे पहले चेक करो क्या यह एडमिन है? ---
+                if (user === ADMIN_EMAIL && pass === ADMIN_PASS) {
+                    msgBox.style.color = 'var(--neon-green)';
+                    msgBox.innerText = "ADMIN ACCESS GRANTED! Redirecting to Hub...";
+                    
+                    setTimeout(() => {
+                        window.location.href = "hub.html"; // एडमिन सीधे हब पर जाएगा
+                    }, 1000);
+                    return;
+                }
+
+                // --- 2. अगर एडमिन नहीं है, तो नॉर्मल रजिस्टर्ड यूजर चेक करो ---
+                let foundUser = users.find(u => (u.username.toLowerCase() === user || u.email.toLowerCase() === user) && u.password === pass);
+
+                if (foundUser) {
+                    msgBox.style.color = 'var(--neon-green)';
+                    msgBox.innerText = "AUTHENTICATION GRANTED! Redirecting to Hub...";
+
+                    // नॉर्मल यूजर भी लॉगिन के बाद सीधा hub.html खुलेगा
+                    setTimeout(() => {
+                        window.location.href = "hub.html";
+                    }, 1000);
+                } else {
+                    msgBox.style.color = 'var(--neon-pink)';
+                    msgBox.innerText = "ACCESS DENIED: Invalid Username, Email or Password!";
+                }
+            }
+        }
+
+        // OTP वेरीफाई करने का फंक्शन
+        function verifyOtp() {
+            const enteredOtp = document.getElementById('enteredOtpInput').value.trim();
+            const otpMsg = document.getElementById('otpMsg');
+            otpMsg.style.display = 'block';
+
+            if (enteredOtp === currentGeneratedOtp) {
+                // OTP सही है! डेटा सेव करो
+                let users = JSON.parse(localStorage.getItem('instaHelperUsers')) || [];
+                users.push(tempUserData);
+                localStorage.setItem('instaHelperUsers', JSON.stringify(users));
+
+                otpMsg.style.color = 'var(--neon-green)';
+                otpMsg.innerText = "OTP VERIFIED! Registration Complete.";
+
+                setTimeout(() => {
+                    document.getElementById('otpModal').style.display = 'none';
+                    switchMode(); // लॉगिन मोड पर भेजो
+                    
+                    const mainMsg = document.getElementById('msgBox');
+                    mainMsg.style.display = 'block';
+                    mainMsg.style.color = 'var(--neon-green)';
+                    mainMsg.innerText = "Registration successful! Now login with your credentials.";
+                }, 1200);
+
+            } else {
+                // OTP गलत है
+                otpMsg.style.color = 'var(--neon-pink)';
+                otpMsg.innerText = "INVALID OTP! Please enter the correct code.";
+            }
+        }
+    </script>
+</body>
+</html>
