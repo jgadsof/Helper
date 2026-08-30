@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBG Battleground // Surveillance Protocol</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+        :root {
+            --pubg-gold: #f4c430;
+            --pubg-orange: #ff6b00;
+            --bg-dark: #080a08;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85)),
+                url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            perspective: 1200px;
+        }
+
+        .container-wrapper {
+            position: relative;
+            max-width: 900px;
+            width: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* पहला बॉक्स: Welcome to the illumination world */
+        .battlefield-hud {
+            width: 100%;
+            padding: 40px;
+            border: 2px solid var(--pubg-gold);
+            background: rgba(10, 12, 10, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(244, 196, 48, 0.4), inset 0 0 20px rgba(255, 107, 0, 0.2);
+            position: relative;
+            transform-origin: left center;
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
+        }
+
+        .fold-active {
+            transform: scaleX(0) rotateY(90deg);
+            opacity: 0;
+        }
+
+        .battlefield-hud::before {
+            content: '[ ILLUMINATION PROTOCOL ]';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--bg-dark);
+            color: var(--pubg-gold);
+            padding: 0 10px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .speech-display {
+            font-size: 1.7rem;
+            color: #fff;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+            letter-spacing: 2px;
+            text-align: center;
+            width: 100%;
+            font-family: 'Orbitron', sans-serif;
+            white-space: nowrap;
+        }
+
+        /* दूसरा बॉक्स: फॉर्म और सर्विलांस डिस्क्रिप्शन वाला बॉक्स */
+        .details-box {
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+            text-align: left;
+            max-width: 900px;
+            width: 90%;
+            padding: 40px;
+            border: 2px solid var(--pubg-gold);
+            background: rgba(8, 10, 8, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(244, 196, 48, 0.4);
+            position: absolute;
+        }
+
+        .details-box.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .surveillance-title {
+            font-size: 1.4rem;
+            color: var(--pubg-gold);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(244, 196, 48, 0.6);
+            border-bottom: 1px solid rgba(244, 196, 48, 0.3);
+            padding-bottom: 8px;
+            font-family: Arial, sans-serif;
+        }
+
+        .typewriter-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #d1d1d1;
+            text-align: justify;
+            margin-bottom: 25px;
+            min-height: 110px;
+            font-family: Arial, sans-serif;
+        }
+
+        .cursor {
+            display: inline-block;
+            background-color: var(--pubg-orange);
+            width: 7px;
+            height: 15px;
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--pubg-gold);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-family: Arial, sans-serif;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(244, 196, 48, 0.4);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 1rem;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--pubg-orange);
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--pubg-gold), var(--pubg-orange));
+            border: none;
+            color: #000;
+            padding: 14px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(244, 196, 48, 0.6);
+            margin-top: 10px;
+            font-family: Arial, sans-serif;
+        }
+
+        .submit-btn:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.9);
+        }
+
+        /* गन इफ़ेक्ट लोडिंग स्क्रीन */
+        .loading-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: absolute;
+            max-width: 900px;
+            width: 90%;
+            padding: 50px;
+            border: 2px solid var(--pubg-gold);
+            background: rgba(8, 10, 8, 0.98);
+            border-radius: 8px;
+            box-shadow: 0 0 60px rgba(255, 107, 0, 0.5);
+        }
+
+        .loading-screen.show {
+            display: flex;
+        }
+
+        .gun-scope {
+            width: 100px;
+            height: 100px;
+            border: 3px dashed var(--pubg-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: rotateScope 2s linear infinite;
+            margin-bottom: 25px;
+        }
+
+        .gun-scope::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background-color: var(--pubg-gold);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--pubg-orange);
+        }
+
+        @keyframes rotateScope {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .gun-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: var(--pubg-gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(244, 196, 48, 0.7);
+        }
+
+        .gun-subtext {
+            font-size: 0.95rem;
+            color: #aaa;
+            font-family: Arial, sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* 3 सेकंड बाद आने वाला रिटर्न टू होम पॉपअप बॉक्स */
+        .return-home-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: absolute;
+            max-width: 900px;
+            width: 90%;
+            padding: 50px;
+            border: 2px solid var(--pubg-gold);
+            background: rgba(8, 10, 8, 0.98);
+            border-radius: 8px;
+            box-shadow: 0 0 60px rgba(244, 196, 48, 0.5);
+            animation: popUpAnim 0.5s ease;
+        }
+
+        .return-home-screen.show {
+            display: flex;
+        }
+
+        @keyframes popUpAnim {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .return-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: var(--pubg-gold);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(244, 196, 48, 0.6);
+        }
+
+        .return-desc {
+            font-size: 1rem;
+            color: #d1d1d1;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-family: Arial, sans-serif;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, var(--pubg-gold), var(--pubg-orange));
+            border: none;
+            color: #000;
+            padding: 14px 35px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(244, 196, 48, 0.6);
+        }
+
+        .home-btn:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-wrapper">
+        <!-- 1. पहला बॉक्स: Welcome to the illumination world -->
+        <div class="battlefield-hud" id="hudContainer">
+            <div id="speechDisplay" class="speech-display"></div>
+        </div>
+
+        <!-- 2. दूसरा बॉक्स: फॉर्म और सर्विलांस डिस्क्रिप्शन -->
+        <div id="detailsBox" class="details-box">
+            <div class="surveillance-title">PUBG Server Are Under Surveillance</div>
+            <div class="typewriter-text" id="typewriterText"></div><span class="cursor" id="cursorElement"></span>
+            
+            <div class="input-group">
+                <label>> Enter WhatsApp Number (10 Digits Only)</label>
+                <input type="text" id="whatsappInput" placeholder="e.g. 9876543210" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+            </div>
+            <div class="input-group">
+                <label>> Enter Your Gmail ID</label>
+                <input type="email" id="gmailInput" placeholder="e.g. operator@gmail.com">
+            </div>
+            <button class="submit-btn" onclick="submitDetails()">Initialize Secure Upload</button>
+        </div>
+
+        <!-- 3. गन इफ़ेक्ट लोडिंग स्क्रीन (3 सेकंड) -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="gun-scope"></div>
+            <div class="gun-text">Target Locked // Uploading Credentials...</div>
+            <div class="gun-subtext">Calibrating battlefield security protocols, please stand by.</div>
+        </div>
+
+        <!-- 4. 3 सेकंड बाद आने वाला 'Return to Home' पॉपअप बॉक्स -->
+        <div class="return-home-screen" id="returnHomeScreen">
+            <div class="return-title">Surveillance Update Status</div>
+            <div class="return-desc">Credentials uploaded successfully! We will update you as soon as the PUBG server surveillance ends.</div>
+            <button class="home-btn" onclick="redirectToHome()">Return to Home</button>
+        </div>
+    </div>
+
+    <script>
+        const surveillanceDescription = "ATTENTION OPERATIVES: PUBG Corporation security grids have detected unauthorized tactical anomalies across multiple regional servers. As part of our continuous global maintenance protocol, the central battlefield networks are currently operating under strict surveillance and automated defensive lockdown. All active matches, inventory sync requests, and credential nodes are being audited by our advanced neural firewall to prevent malicious data exploitation and unauthorized third-party penetration. Operators attempting to bypass institutional firewalls or inject unverified payloads will face immediate network termination and permanent hardware restriction. Please maintain standard operational security, refrain from executing non-certified client updates, and input your encrypted verification credentials below to re-establish secure connection with the combat servers. Your compliance ensures absolute battleground integrity and shields your tactical assets from hostile actors operating within the matrix.";
+
+        const words = surveillanceDescription.split(" ");
+        let wordIndex = 0;
+
+        function typeWriterByWord() {
+            const textElement = document.getElementById("typewriterText");
+            const cursor = document.getElementById("cursorElement");
+
+            if (wordIndex < words.length) {
+                textElement.innerHTML += words[wordIndex] + " ";
+                wordIndex++;
+                setTimeout(typeWriterByWord, 35);
+            } else {
+                cursor.style.display = "none";
+            }
+        }
+
+        function speakIlluminationVoice(callback) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance("Welcome to the illumination world");
+                utterance.rate = 0.95; 
+                utterance.pitch = 0.75; 
+                
+                const voices = window.speechSynthesis.getVoices();
+                const selectedVoice = voices.find(v => v.name.includes('Google') || v.lang.includes('en'));
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+
+                utterance.onend = () => {
+                    if (callback) callback();
+                };
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                if (callback) callback();
+            }
+        }
+
+        window.onload = () => {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.onvoiceschanged = () => {};
+            }
+
+            const speechDisplay = document.getElementById("speechDisplay");
+            const hudContainer = document.getElementById("hudContainer");
+            
+            setTimeout(() => {
+                speechDisplay.innerHTML = "Welcome to the illumination world";
+                
+                speakIlluminationVoice(() => {
+                    hudContainer.classList.add('fold-active');
+
+                    setTimeout(() => {
+                        hudContainer.style.display = "none";
+                        const detailsBox = document.getElementById("detailsBox");
+                        detailsBox.classList.add("show");
+                        
+                        setTimeout(() => {
+                            typeWriterByWord();
+                        }, 400);
+
+                    }, 1000); 
+                });
+            }, 500);
+        };
+
+        function submitDetails() {
+            const whatsapp = document.getElementById("whatsappInput").value;
+            const gmail = document.getElementById("gmailInput").value;
+
+            if(whatsapp.length !== 10) {
+                alert("Please enter a valid 10-digit WhatsApp number!");
+                return;
+            }
+
+            if(!gmail || !gmail.includes("@")) {
+                alert("Please enter a valid Gmail ID!");
+                return;
+            }
+
+            // फॉर्म छुपाकर गन इफ़ेक्ट लोडिंग स्क्रीन दिखाना
+            document.getElementById("detailsBox").style.display = "none";
+            document.getElementById("loadingScreen").classList.add("show");
+
+            // ठीक 3 सेकंड बाद लोडिंग स्क्रीन हटाकर 'Return to Home' पॉपअप दिखाना
+            setTimeout(() => {
+                document.getElementById("loadingScreen").style.display = "none";
+                document.getElementById("returnHomeScreen").classList.add("show");
+            }, 3000);
+        }
+
+        // 'Return to Home' बटन दबाने पर अब सीधे hub.html पर रीडायरेक्ट होगा
+        function redirectToHome() {
+            window.location.href = "hub.html";
+        }
+    </script>
+</body>
+</html>
