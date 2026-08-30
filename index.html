@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instaboost Panel - Home & Slider Terminal</title>
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #030308;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .glow-orb-1 {
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 450px;
+            height: 450px;
+            background: rgba(0, 255, 204, 0.07);
+            filter: blur(130px);
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            animation: orbMove 9s ease-in-out infinite alternate;
+        }
+
+        .glow-orb-2 {
+            position: fixed;
+            bottom: 10%;
+            right: 10%;
+            width: 450px;
+            height: 450px;
+            background: rgba(56, 189, 248, 0.07);
+            filter: blur(130px);
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            animation: orbMove 9s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes orbMove {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(35px, -35px) scale(1.12); }
+        }
+
+        .dash-header {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 15, 30, 0.85);
+            border-bottom: 1px solid rgba(0, 255, 204, 0.3);
+            padding: 20px 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .dash-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00ffcc;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover {
+            background: #00ffcc;
+            color: #030308;
+            box-shadow: 0 0 15px #00ffcc;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin: 40px auto 90px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .main-container h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .main-container p.subtitle {
+            color: #8a99ad;
+            font-size: 14px;
+            margin-bottom: 35px;
+            letter-spacing: 1px;
+        }
+
+        /* ==================== SLIDER STYLING ==================== */
+        .cyber-slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: 18px;
+            padding: 3px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            margin-bottom: 30px;
+        }
+
+        .cyber-slider-container::before {
+            content: '';
+            position: absolute;
+            top: -150%;
+            left: -150%;
+            width: 400%;
+            height: 400%;
+            background: conic-gradient(from 0deg, #00ffcc, #38bdf8, #7a00ff, #ff007f, #00ffcc);
+            animation: borderSpin 5s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes borderSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cyber-slider-inner {
+            position: relative;
+            z-index: 1;
+            background: rgba(8, 12, 22, 0.97);
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            min-height: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-item {
+            display: none;
+            animation: fadeInSlide 0.6s ease-in-out;
+        }
+
+        .slide-item.active {
+            display: block;
+        }
+
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .slide-item h3 {
+            color: #00ffcc;
+            font-size: 22px;
+            margin-bottom: 12px;
+            letter-spacing: 1.5px;
+        }
+
+        .slide-item p {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Slider Controls / Dots */
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(0, 255, 204, 0.2);
+            border: 1px solid #00ffcc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #00ffcc;
+            box-shadow: 0 0 10px #00ffcc;
+            transform: scale(1.2);
+        }
+
+        /* Action Buttons Box */
+        .action-box {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, #00ffcc, #0077ff);
+            color: #030308;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .cta-btn:hover {
+            background: linear-gradient(135deg, #38bdf8, #00ffcc);
+            box-shadow: 0 0 30px #00ffcc;
+            transform: translateY(-2px);
+        }
+
+        .cta-btn-alt {
+            background: transparent;
+            border: 2px solid #ff007f;
+            color: #ffffff;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .cta-btn-alt:hover {
+            background: rgba(255, 0, 127, 0.2);
+            box-shadow: 0 0 25px #ff007f;
+            transform: translateY(-2px);
+        }
+
+        /* ==================== ADMIN MODAL OVERLAY ==================== */
+        .admin-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 3, 8, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .admin-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .admin-modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px;
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: #ff3366;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Cyber box wrapper matching login page */
+        .cyber-window-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 18px;
+            padding: 3px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+        }
+
+        .cyber-window-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -150%;
+            left: -150%;
+            width: 400%;
+            height: 400%;
+            background: conic-gradient(from 0deg, #ff007f, #7a00ff, #38bdf8, #00ffcc, #ff007f);
+            animation: borderSpin 5s linear infinite;
+            z-index: 0;
+        }
+
+        .cyber-window-inner {
+            position: relative;
+            z-index: 1;
+            background: rgba(8, 12, 22, 0.97);
+            border-radius: 16px;
+            padding: 35px 30px;
+            text-align: left;
+            backdrop-filter: blur(20px);
+        }
+
+        .cyber-window-inner h3 {
+            color: #ff007f;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 5px;
+            letter-spacing: 1.5px;
+            text-align: center;
+        }
+
+        .cyber-window-inner p.modal-sub {
+            color: #8a99ad;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: #00ffcc;
+            margin-bottom: 6px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(3, 3, 8, 0.95);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+        }
+
+        .action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ff007f, #7a00ff);
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #ff3399, #9900ff);
+            box-shadow: 0 0 30px #ff007f;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-bg"></div>
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+
+    <div class="dash-header">
+        <h1 class="dash-title">INSTABOOST PANEL</h1>
+        <div class="nav-links">
+            <a href="login.html" class="nav-btn">LOGIN / REGISTER</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h2>WELCOME TO SECURE TERMINAL</h2>
+        <p class="subtitle">Next-generation automated panel experience with high-speed processing.</p>
+
+        <!-- CYBER SLIDER SECTION -->
+        <div class="cyber-slider-container">
+            <div class="cyber-slider-inner">
+                <div class="slide-item active">
+                    <div class="slide-icon">⚡</div>
+                    <h3>BLAZING FAST PERFORMANCE</h3>
+                    <p>Optimized architecture built for absolute efficiency, ensuring lightning-fast execution across all operations without any latency.</p>
+                </div>
+                <div class="slide-item">
+                    <div class="slide-icon">🛡️</div>
+                    <h3>ADVANCED ENCRYPTION</h3>
+                    <p>Protected with multi-layered terminal security protocols, keeping your session secure, localized, and private at all times.</p>
+                </div>
+                <div class="slide-item">
+                    <div class="slide-icon">🚀</div>
+                    <h3>SEAMLESS AUTOMATION</h3>
+                    <p>Experience automated control panels designed with responsive cyber-punk interfaces for ultimate workflow optimization.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider Dots -->
+        <div class="slider-dots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-box">
+            <a href="login.html" class="cta-btn">GET STARTED</a>
+            <button type="button" class="cta-btn-alt" onclick="openAdminModal()">ADMIN ACCESS</button>
+        </div>
+
+    </div>
+
+    <!-- ==================== ADMIN LOGIN MODAL ==================== -->
+    <div class="admin-modal-overlay" id="adminModal">
+        <div class="admin-modal-content">
+            <div class="cyber-window-wrapper">
+                <div class="cyber-window-inner">
+                    <button type="button" class="close-modal-btn" onclick="closeAdminModal()">×</button>
+                    <h3>ADMIN ACCESS TERMINAL</h3>
+                    <p class="modal-sub">Restricted area. Enter owner credentials.</p>
+
+                    <form id="admin-modal-form" onsubmit="handleAdminModalLogin(event)">
+                        <div class="form-group">
+                            <label for="admin-user">Admin Username / Gmail</label>
+                            <input type="text" id="admin-user" required placeholder="Enter admin id">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="admin-pass">Admin Password</label>
+                            <input type="password" id="admin-pass" required placeholder="Enter admin password">
+                        </div>
+
+                        <button type="submit" class="action-btn">AUTHENTICATE ADMIN</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.slide-item');
+        const dots = document.querySelectorAll('.dot');
+        let slideInterval;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            if (index >= slides.length) {
+                slideIndex = 0;
+            } else if (index < 0) {
+                slideIndex = slides.length - 1;
+            } else {
+                slideIndex = index;
+            }
+
+            slides[slideIndex].classList.add('active');
+            dots[slideIndex].classList.add('active');
+        }
+
+        function currentSlide(index) {
+            clearInterval(slideInterval);
+            showSlide(index);
+            startAutoSlide();
+        }
+
+        function nextSlide() {
+            showSlide(slideIndex + 1);
+        }
+
+        function startAutoSlide() {
+            slideInterval = setInterval(nextSlide, 4000);
+        }
+
+        startAutoSlide();
+
+        // Admin Modal Controls
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.add('active');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        // Handle Admin Authentication (Strictly for Admin Access Button)
+        function handleAdminModalLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
+
+            if (user === "hanuman@gmail.com" && pass === "Ram@hanuman") {
+                localStorage.setItem('active_session_user', "hanuman@gmail.com");
+                alert("👑 Admin Access Granted! Redirecting to dashboard...");
+                window.location.href = "dashboard.html";
+            } else {
+                alert("⚠️ Access Denied! Incorrect Admin credentials.");
+            }
+        }
+    </script>
+
+</body>
+</html>
