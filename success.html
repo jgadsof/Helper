@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Deployment Protocol - Success</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background-color: #030308;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Gaming Neon Wallpaper Background */
+        .gaming-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: 
+                linear-gradient(135deg, rgba(3, 3, 8, 0.92), rgba(10, 5, 20, 0.95)),
+                url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Gaming Neon Dashboard Container */
+        #selection-dashboard {
+            position: relative;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .dashboard-container {
+            max-width: 760px; width: 100%;
+            background: rgba(8, 8, 20, 0.92);
+            backdrop-filter: blur(16px);
+            border: 2px solid #00ffcc;
+            box-shadow: 0 0 40px rgba(0, 255, 204, 0.35), inset 0 0 20px rgba(0, 255, 204, 0.1);
+            border-radius: 12px; padding: 35px; text-align: center;
+            
+            /* Tadda Gaming Entrance Animation */
+            animation: gamingPopEntrance 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes gamingPopEntrance {
+            0% { transform: scale(0.6) translateY(40px); opacity: 0; filter: blur(10px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
+        }
+
+        .dashboard-container h2 {
+            color: #00ffcc; font-size: 22px; margin-bottom: 8px; letter-spacing: 2px; font-weight: bold;
+            text-shadow: 0 0 12px rgba(0, 255, 204, 0.8);
+        }
+
+        .dashboard-sub {
+            color: #a78bfa; font-size: 13px; margin-bottom: 25px; letter-spacing: 1px;
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; text-align: left;
+        }
+
+        .option-card {
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(0, 255, 204, 0.25);
+            border-radius: 8px; padding: 16px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; gap: 15px;
+            position: relative; overflow: hidden;
+        }
+
+        .option-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+            background: transparent; transition: background 0.3s ease;
+        }
+
+        .option-card:hover {
+            border-color: #ff007f;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
+            transform: translateY(-3px);
+            background: rgba(25, 10, 35, 0.9);
+        }
+
+        .option-card:hover::before {
+            background: #ff007f;
+        }
+
+        .option-card.selected {
+            border-color: #00ffcc;
+            background: rgba(0, 255, 204, 0.1);
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.5);
+        }
+
+        .option-card.selected::before {
+            background: #00ffcc;
+        }
+
+        .option-icon { font-size: 24px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); }
+        .option-info h4 { color: #ffffff; margin: 0 0 4px 0; font-size: 14px; letter-spacing: 1px; }
+        .option-info p { color: #94a3b8; margin: 0; font-size: 11px; }
+
+        /* Initiate Deploying Button */
+        .initiate-deploy-btn {
+            background: #ff007f; color: #ffffff; border: none;
+            padding: 15px 40px; border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 15px; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .initiate-deploy-btn:hover {
+            background: #00ffcc; color: #05050a;
+            box-shadow: 0 0 35px #00ffcc;
+            transform: translateY(-2px);
+        }
+
+        @media(max-width: 650px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="gaming-bg"></div>
+
+    <!-- GAMING REQUIREMENT SELECTION DASHBOARD -->
+    <div id="selection-dashboard">
+        <div class="dashboard-container">
+            <h2>⚡ SELECT GAMEPLAY DEPLOYMENT</h2>
+            <p class="dashboard-sub">Choose your target resource package for secure neural injection.</p>
+            
+            <div class="options-grid">
+                <div class="option-card" onclick="selectOption(this, 'Profile Likes')">
+                    <span class="option-icon">❤️</span>
+                    <div class="option-info">
+                        <h4>Profile Likes</h4>
+                        <p>Boost ID likes counter instantly</p>
+                    </div>
+                </div>
+                <div class="option-card" onclick="selectOption(this, 'Rank Push')">
+                    <span class="option-icon">🏆</span>
+                    <div class="option-info">
+                        <h4>Rank Push</h4>
+                        <p>Auto-elevate tier to Heroic/Grandmaster</p>
+                    </div>
+                </div>
+                <div class="option-card" onclick="selectOption(this, 'Elite Pass')">
+                    <span class="option-icon">🎟️</span>
+                    <div class="option-info">
+                        <h4>Elite Pass</h4>
+                        <p>Unlock seasonal badge rewards</p>
+                    </div>
+                </div>
+                <div class="option-card" onclick="selectOption(this, 'Diamonds Bundle')">
+                    <span class="option-icon">💎</span>
+                    <div class="option-info">
+                        <h4>Diamonds Bundle</h4>
+                        <p>Secure currency packet injection</p>
+                    </div>
+                </div>
+                <div class="option-card" onclick="selectOption(this, 'Gaming Panel')" style="grid-column: span 2;">
+                    <span class="option-icon">🛡️</span>
+                    <div class="option-info">
+                        <h4>Gaming Panel Access</h4>
+                        <p>Advanced control interface module for custom tweaks</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="initiate-deploy-btn" onclick="initiateDeploy()">INITIATE DEPLOYING</button>
+        </div>
+    </div>
+
+    <script>
+        let chosenRequirement = "";
+
+        function selectOption(element, reqName) {
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            chosenRequirement = reqName;
+        }
+
+        function initiateDeploy() {
+            if (!chosenRequirement) {
+                alert("⚠️ Error: Please select at least one deployment requirement before initializing!");
+                return;
+            }
+
+            // Automatic Smart Routing:
+            // Agar 'Gaming Panel' select kiya hai toh panel.html khulega,
+            // Baaki kuch bhi (Profile Likes, Rank Push, Elite Pass, Diamonds) select karne par deploy.html khulega.
+            if (chosenRequirement === 'Gaming Panel') {
+                window.location.href = 'panel.html';
+            } else {
+                window.location.href = 'deploy.html';
+            }
+        }
+    </script>
+</body>
+</html>
